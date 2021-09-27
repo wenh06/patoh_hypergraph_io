@@ -35,7 +35,7 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     """
     with open(path, "r") as f:
         content = f.read().splitlines()
-    content = [l.strip() for l in content if not l.startswith("%")]
+    content = [l.strip() for l in content if not l.strip().startswith("%")]
     start_val, n_vertex, n_edge, n_pin, weight_mode, n_constraint = re.findall(_HEADER_PATTERN, content[0])[0]
     start_val, n_vertex, n_edge, n_pin = int(start_val), int(n_vertex), int(n_edge), int(n_pin)
     try:
@@ -54,7 +54,7 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     if weight_mode in [2,3]:
         for idx, line in enumerate(content[1:1+n_edge]):
             line = line.split()
-            edge_weight[idx,0] = int(line[0])  # TODO: should consider float?
+            edge_weight[idx,0] = int(line[0])  # TODO: should consider float? in manual, it is int
             for j in line[1:]:
                 hyp[int(j)-start_val,idx] = 1
     elif weight_mode in [0, 1,]:
