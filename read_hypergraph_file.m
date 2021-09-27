@@ -1,4 +1,14 @@
 function [hyp, vertex_weight, edge_weight] = read_hypergraph_file(path)
+    %  
+    %  Input Arguments:
+    %  path: path to the PaToH hypergraph file
+    %  
+    %  Output Arguments:
+    %  
+    %  hyp: the hypergraph which is a sparse matrix of size (n_vertex, n_edge)
+    %  vertex_weight: weight matrix of the vertices, of size (n_vertex, n_constraint)
+    %  edge_weight: weight vector of the hyperedges(nets), of size (n_edge, 1)
+    %  
     fid = fopen(path, "r");
     while true
         tline = fgetl(fid);
@@ -36,7 +46,6 @@ function [hyp, vertex_weight, edge_weight] = read_hypergraph_file(path)
         end
         tline = split(tline);
         if any(weight_mode == [2 3])
-            disp([i str2num(tline{1,1})])
             edge_weight(i,1) = str2num(tline{1,1});
             for j = 2:length(tline)
                 hyp(str2num(tline{j,1})-start_val+1,i) = 1;

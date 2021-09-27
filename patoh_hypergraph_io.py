@@ -25,7 +25,7 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     Returns
     -------
     hyp: lil_matrix,
-        the hypergraph
+        the hypergraph, a sparse matrix of shape (n_vertex, n_edge)
     vertex_weight: ndarray,
         weight matrix of vertices, of shape (n_vertex, n_constraint),
         or None if not given in the hypergraph file
