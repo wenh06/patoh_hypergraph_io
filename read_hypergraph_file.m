@@ -1,4 +1,4 @@
-function [hyp, vertex_weight, edge_weight] = read_hypergraph_file(path)
+function [hyp, vertex_weight, edge_weight, n_constraint] = read_hypergraph_file(path)
     %  
     %  Input Arguments:
     %  path: path to the PaToH hypergraph file
@@ -8,6 +8,7 @@ function [hyp, vertex_weight, edge_weight] = read_hypergraph_file(path)
     %  hyp: the hypergraph which is a sparse matrix of size (n_vertex, n_edge)
     %  vertex_weight: weight matrix of the vertices, of size (n_vertex, n_constraint)
     %  edge_weight: weight vector of the hyperedges(nets), of size (n_edge, 1)
+    %  n_constraint: number of constraints for each vertex
     %  
     fid = fopen(path, "r");
     while true
