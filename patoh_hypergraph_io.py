@@ -28,10 +28,10 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
         the hypergraph, a sparse matrix of shape (n_vertex, n_edge)
     vertex_weight: ndarray,
         weight matrix of vertices, of shape (n_vertex, n_constraint),
-        or None if not given in the hypergraph file
+        default values are 1
     edge_weight: ndarray,
-        weight vector of hyperedges (nets), of shape (n_edge,),
-        or None if not given in the hypergraph file
+        weight vector of hyperedges (nets), of shape (n_edge, 1),
+        default values are 1
     """
     with open(path, "r") as f:
         content = f.read().splitlines()
@@ -46,16 +46,15 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
         n_constraint = int(n_constraint)
     except:
         n_constraint = 1
-    edge_weight = None
-    vertex_weight = None
+    edge_weight = np.ones((n_edge, 1))
+    vertex_weight = np.ones((n_vertex, n_constraint))
     
     hyp = lil_matrix((n_vertex, n_edge))
     
     if weight_mode in [2,3]:
-        edge_weight = np.zeros((n_edge,))
         for idx, line in enumerate(content[1:1+n_edge]):
             line = line.split()
-            edge_weight[idx] = int(line[0])  # TODO: should consider float?
+            edge_weight[idx,0] = int(line[0])  # TODO: should consider float?
             for j in line[1:]:
                 hyp[int(j)-start_val,idx] = 1
     elif weight_mode in [0, 1,]:
@@ -63,9 +62,8 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
             for j in line.split():
                 hyp[int(j)-start_val,idx] = 1
     if weight_mode in [1,3]:
-        vertex_weight = []
+        vertex_weight = np.array([])
         for line in content[1+n_edge:]:
-            vertex_weight.extend([int(i) for i in line.split()])
-        vertex_weight = np.array(vertex_weight)
+            vertex_weight = np.concatenate((vertex_weight, np.fromstring(line, sep=" ")))
         vertex_weight = vertex_weight.reshape((n_vertex, n_constraint))
     return hyp, vertex_weight, edge_weight
