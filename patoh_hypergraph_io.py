@@ -16,6 +16,22 @@ _HEADER_PATTERN = "^(?P<start_val>[\d]{1})[\s]+(?P<n_vertex>[\d]+)[\s]+(?P<n_edg
 
 def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     """
+
+    Parameters
+    ----------
+    path: str,
+        path to the PaToH hypergraph file
+
+    Returns
+    -------
+    hyp: lil_matrix,
+        the hypergraph
+    vertex_weight: ndarray,
+        weight matrix of vertices, of shape (n_vertex, n_constraint),
+        or None if not given in the hypergraph file
+    edge_weight: ndarray,
+        weight vector of hyperedges (nets), of shape (n_edge,),
+        or None if not given in the hypergraph file
     """
     with open(path, "r") as f:
         content = f.read().splitlines()
@@ -25,7 +41,7 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     try:
         weight_mode = int(weight_mode)
     except:
-        weight_mode = None
+        weight_mode = 0
     try:
         n_constraint = int(n_constraint)
     except:
@@ -36,14 +52,13 @@ def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     hyp = lil_matrix((n_vertex, n_edge))
     
     if weight_mode in [2,3]:
-        edge_weight = []
+        edge_weight = np.zeros((n_edge,))
         for idx, line in enumerate(content[1:1+n_edge]):
             line = line.split()
-            edge_weight.append(int(line[0]))
+            edge_weight[idx] = int(line[0])  # TODO: should consider float?
             for j in line[1:]:
                 hyp[int(j)-start_val,idx] = 1
-        edge_weight = np.array(edge_weight)
-    elif weight_mode in [1,] or weight_mode is None:
+    elif weight_mode in [0, 1,]:
         for idx, line in enumerate(content[1:1+n_edge]):
             for j in line.split():
                 hyp[int(j)-start_val,idx] = 1
