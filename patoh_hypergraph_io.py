@@ -11,13 +11,16 @@ from scipy.sparse import lil_matrix
 __all__ = ["read_hypergraph_file",]
 
 
+_HEADER_PATTERN = "^(?P<start_val>[\d]{1})[\s]+(?P<n_vertex>[\d]+)[\s]+(?P<n_edge>[\d]+)[\s]+(?P<n_pin>[\d]+)(?:[\s]+(?P<weight_mode>[\d]{1}))?(?:[\s]+(?P<n_constraint>[\d]+))?$"
+
+
 def read_hypergraph_file(path:str) -> Tuple[lil_matrix, np.ndarray, np.ndarray]:
     """
     """
     with open(path, "r") as f:
         content = f.read().splitlines()
     content = [l.strip() for l in content if not l.startswith("%")]
-    start_val, n_vertex, n_edge, n_pin, weight_mode, n_constraint = re.findall(pattern, content[0])[0]
+    start_val, n_vertex, n_edge, n_pin, weight_mode, n_constraint = re.findall(_HEADER_PATTERN, content[0])[0]
     start_val, n_vertex, n_edge, n_pin = int(start_val), int(n_vertex), int(n_edge), int(n_pin)
     try:
         weight_mode = int(weight_mode)
